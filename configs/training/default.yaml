@@ -1,0 +1,34 @@
+# Training steps
+max_steps: 200000
+
+# Batch size
+batch_size: 16384
+
+# Optimizer
+optimizer:
+  name: adam
+  lr: 3e-4  # Learning rate
+  # Adam betas are set to (0.9, 0.999) in the Trainer class
+
+# Learning rate schedule (3-phase: linear warmup, constant, linear decay to 0)
+lr_schedule:
+  warmup_steps: 100            # Steps of linear warmup from 0 to full LR
+  decay_start_fraction: 0.8    # Fraction of max_steps at which linear decay begins
+
+# Logging
+log_interval: 500  # Log metrics every N steps
+eval_interval: 500  # Run full evaluation every N steps
+
+# Checkpointing (TransformerTrainer only)
+# SyntheticTrainer does not save checkpoints (fast training)
+save_interval: 50000  # Save checkpoint every N steps
+eval_samples: 10000   # Number of samples for evaluation
+
+# Evaluation parameters
+evaluation:
+  max_subsample_size: 100000  # Max samples for activation metrics
+
+# Geometric median computation (weight initialization)
+geometric_median:
+  n_samples: 50000     # Samples for median computation
+  tolerance: 1.e-5     # Convergence tolerance

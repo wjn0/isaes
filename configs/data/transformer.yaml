@@ -1,0 +1,30 @@
+# Transformer activation data configuration
+# Pre-computed activations from transformer models via dictionary_learning
+
+# Data source identifier
+data_source: transformer
+
+# Model and hook configuration
+model_name: EleutherAI/pythia-70m-deduped
+dataset_name: HuggingFaceFW/fineweb
+hook_layer: 3
+hook_name: null  # Auto-generated as blocks.{layer}.hook_resid_post
+
+# Activation collection
+n_contexts: 450000  # Number of contexts to collect in activation buffer
+
+# SAE configuration
+k: 32  # Sparsity level (top_k - number of active concepts per sample)
+nb_concepts: 2048  # Number of dictionary concepts to learn
+
+# Input dimension determined at runtime from model
+input_dim: null  # Auto-detected from model's hidden dimension
+d_model: null  # Auto-detected from model architecture if not specified
+
+# No ground truth for transformer data
+regime: null  # Not applicable (no ground truth mixing matrix)
+true_concepts: null  # Not applicable (real data)
+learned_concepts: null  # Will be set from nb_concepts in training script
+
+# No additional noise
+noise_std: 0.0

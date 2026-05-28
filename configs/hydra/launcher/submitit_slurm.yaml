@@ -1,0 +1,42 @@
+# @package hydra.launcher
+_target_: hydra_plugins.hydra_submitit_launcher.submitit_launcher.SlurmLauncher
+
+# Output directory for submitit internal logs (semantic filenames in logs/)
+submitit_folder: logs/${hydra.job.name}
+
+# Job naming
+name: ${hydra.job.name}
+
+# So package doesn't need to be installed
+# $PWD is the project root since hydra.job.chdir=false in sweep configs
+setup:
+  - export PYTHONPATH=$PWD/dictionary_learning:$PYTHONPATH
+
+# Slurm resource configuration
+# NOTE: partition must be set at runtime via hydra.launcher.partition=<partition>
+partition: null
+timeout_min: 180  # 3 hours default
+nodes: 1
+tasks_per_node: 1
+cpus_per_task: 8
+mem_gb: 128
+gres: gpu:1
+
+# Signal handling for cleanup before timeout
+signal_delay_s: 120
+
+# Maximum concurrent array jobs
+array_parallelism: 256
+
+# Additional Slurm parameters (optional)
+qos: null
+account: null
+constraint: null
+exclude: null
+
+# Log file configuration (semantic names in logs/ directory)
+# Submitit creates files like: logs/{job_name}/{job_id}_0_log.out
+# For cleaner naming, use additional_parameters
+additional_parameters:
+  output: logs/${hydra.job.name}_%j.out
+  error: logs/${hydra.job.name}_%j.err

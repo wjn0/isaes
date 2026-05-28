@@ -1,0 +1,35 @@
+# Vision model activation data configuration
+# Patch embeddings from vision transformers (DINOv2)
+
+# Data source identifier
+data_source: vision
+
+# Model configuration
+model_name: facebook/dinov2-base
+dataset_name: imagenet-1k
+hook_layer: 11  # Final layer (0-indexed, DINOv2-base has 12 layers)
+
+# Activation collection
+n_images: 50000  # Number of images (~10M patches with 196 per image)
+patches_per_image: 196  # 14x14 patches for 224x224 input
+refresh_batch_size: 64  # Images per refresh batch
+
+# SAE configuration
+k: 40  # Sparsity level (top_k - number of active concepts per sample)
+nb_concepts: 4096  # Number of dictionary concepts to learn
+
+# Model dimension
+d_model: 768  # DINOv2-base hidden dimension
+
+# Not applicable for vision (compatibility with transformer config)
+n_contexts: null
+hook_name: null
+input_dim: null  # Will use d_model
+
+# No ground truth for vision data
+regime: null
+true_concepts: null
+learned_concepts: null
+
+# No additional noise
+noise_std: 0.0

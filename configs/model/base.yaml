@@ -1,0 +1,51 @@
+# Base model configuration - common defaults for all SAE variants
+type: riptopk
+
+# Sparsity variants
+use_abstopk: false  # If true, use magnitude-based TopK (non-standard)
+batch_topk: false              # Use BatchTopK instead of per-sample TopK
+matryoshka: false              # Use Matryoshka nested reconstruction loss
+matryoshka_group_sizes: null   # Group sizes for matryoshka (null = 4 equal groups)
+
+# Preprocessing
+whiten: false  # If true, whiten inputs before encoding
+
+# Encoder
+mlp_encoder: false  # If true, use MLP encoder instead of usual linear
+num_encode_steps: 1  # Number of iterative encoding steps for residual refinement
+initial_step_size: 0.9  # Initial value for learnable step size parameter
+learned_step_size: true  # If true, step size is learned; if false, computed from decoder weights
+step_size_rank: 0  # Low-rank parameterization rank for step size (0 = full rank)
+
+# RIP-specific hyperparameters
+rip_weight: 0.  # Weight for RIP loss term
+auxk_weight: 0.03125  # Weight for AuxK loss term (1/32)
+l1_weight: 0.  # Weight for L1 sparsity penalty
+rip_loss_weighted: false  # Use original code values (true) or random Gaussian substitutes (false)
+rip_loss_multiplier: 2  # RIP dimension multiplier (k' = k * multiplier)
+# auxiliary_k: null  # Number of top features for AuxK reconstruction (defaults to input_dim // 2 if not set)
+normalization: l2  # Dictionary normalization: 'l2' or 'identity'
+
+# Dead concept tracking parameters (count-based sliding window)
+activation_window_batches: 8  # Number of batches to track
+
+# Numerical stability constants
+numerical_stability:
+  norm_clamp_min: 1.e-8        # Small epsilon for division/sqrt stability
+  small_norm_threshold: 1.e-6   # Threshold for zero-like values
+
+# Tied weights configuration
+tied_weights:
+  enabled: false  # Enable tied encoder/decoder weights
+  untie_fraction: 0.25  # Fraction of training to untie (0.0-1.0, 1.0 = never untie)
+
+# Hot restart configuration
+hot_restart:
+  enabled: false  # Enable periodic hot restarts
+  interval: 10000  # Restart every N training steps
+
+# Non-iterated warmup (uses num_encode_steps=1 for first N steps)
+noniterated_warmup_steps: -1  # Disabled by default (-1). Set >= 0 to enable.
+
+# Model architecture
+# nb_concepts and top_k set from data config at runtime

@@ -1,0 +1,28 @@
+# Number of samples to generate
+# Set to null for online mode (generate batches on-the-fly during training)
+# Set to integer for traditional mode (pre-generate all data with caching)
+n_samples: null  # Default:online mode
+
+# Dimensionality settings
+input_dim: 32  # Dimensionality of observed space
+true_concepts: 128  # Number of ground truth latent concepts
+k: 3  # Sparsity level (number of active concepts per sample)
+
+# Dictionary distribution
+distribution: gaussian_mixture  # Options: gaussian, beta_half, gamma
+
+# Mixture scale when using gaussian_mixture
+mixture_scale: 0.
+
+# Concept parameterization regime
+# Options: "matched", "underparameterized"/"under", "overparameterized"/"over", or integer
+regime: matched  # If matched, learned_concepts = true_concepts
+
+# Computed learned_concepts (set automatically based on regime)
+# - matched: learned_concepts = true_concepts
+# - under/underparameterized: learned_concepts = 0.75 * true_concepts
+# - over/overparameterized: learned_concepts = 2.0 * true_concepts
+learned_concepts: null  # Will be computed from regime
+
+# Noise in observations
+noise_std: 0.0  # Standard deviation of Gaussian noise

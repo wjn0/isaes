@@ -1,0 +1,47 @@
+# @package _global_
+
+# Base configuration composition
+defaults:
+  - /synthetic  # Inherit from base synthetic.yaml config
+  - override /hydra/launcher: submitit_slurm
+  - _self_
+
+# Fixed parameters (override base config)
+data:
+  n_samples: null  # online mode -- infinite data
+  input_dim: 768
+  true_concepts: 4096
+  k: 40
+  distribution: gaussian_mixture
+  noise_std: 0.0
+  regime: matched
+
+training:
+  max_steps: 30_000
+  batch_size: 2048
+  optimizer:
+    lr: 3.e-4
+
+# Sweep parameters (grid search)
+# Syntax: param: value1,value2,value3
+hydra:
+  sweeper:
+    params:
+      seed.data: 42,43
+      data.mixture_scale: 0.,0.3
+      seed.train: 0,1,2
+
+  # Output directory structure
+  sweep:
+    dir: outputs/sweeps/${now:%Y-%m-%d}/${now:%H-%M-%S}_synthetic
+    subdir: ${hydra.job.num}
+
+  # CRITICAL: Don't change working directory (breaks MLflow relative paths)
+  job:
+    name: synthetic_sweep
+    chdir: false
+
+  # Callbacks for experiment setup
+  callbacks:
+    mlflow_experiment:
+      _target_: rsae.utils.hydra_callbacks.MLflowExperimentCallback

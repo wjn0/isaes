@@ -1,0 +1,53 @@
+# @package _global_
+
+# Base configuration composition
+defaults:
+  - /vision  # Inherit from base vision.yaml config
+  - override /hydra/launcher: submitit_slurm
+  - _self_
+
+# Fixed vision configuration
+data:
+  model_name: facebook/dinov2-base
+  hook_layer: 11
+  n_images: 50000
+  dataset_name: imagenet-1k
+  nb_concepts: 4096
+  k: 40
+  d_model: 768
+
+# Fixed training configuration
+training:
+  batch_size: 2048
+  max_steps: 100_000
+  log_interval: 500
+  eval_interval: 5000
+  optimizer:
+    lr: 3.e-4
+
+# Sweep parameters (grid search)
+hydra:
+  sweeper:
+    params:
+      seed.train: 0,1,2
+
+  # Output directory structure
+  sweep:
+    dir: outputs/sweeps/${now:%Y-%m-%d}/${now:%H-%M-%S}_dinov2
+    subdir: ${hydra.job.num}
+
+  # CRITICAL: Don't change working directory (breaks MLflow relative paths)
+  job:
+    name: dinov2_sweep
+    chdir: false
+
+  # Callbacks for experiment setup
+  callbacks:
+    mlflow_experiment:
+      _target_: rsae.utils.hydra_callbacks.MLflowExperimentCallback
+
+  # Launcher resource overrides for vision training
+  launcher:
+    timeout_min: 960  # 16 hours
+    mem_gb: 256       # Memory for activation buffers
+    cpus_per_task: 16 # CPUs for data loading

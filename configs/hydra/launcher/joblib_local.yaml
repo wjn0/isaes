@@ -1,0 +1,14 @@
+# @package hydra.launcher
+_target_: hydra_plugins.hydra_joblib_launcher.joblib_launcher.JoblibLauncher
+
+# Run 4 jobs in parallel (one per GPU)
+n_jobs: 4
+
+# Use separate processes for GPU isolation
+prefer: processes
+
+# Print progress
+verbose: 1
+
+# Pre-dispatch to keep workers busy
+pre_dispatch: "2*n_jobs"

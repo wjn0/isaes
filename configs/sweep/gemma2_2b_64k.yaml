@@ -1,0 +1,56 @@
+# @package _global_
+
+# Base configuration composition
+defaults:
+  - /transformer  # Inherit from base transformer.yaml config
+  - override /hydra/launcher: submitit_slurm
+  - _self_
+
+# Fixed transformer configuration
+data:
+  model_name: google/gemma-2-2b
+  hook_layer: 12
+  n_contexts: 100_000
+  dataset_name: monology/pile-uncopyrighted
+  nb_concepts: 65536
+  k: 40
+
+# Model configuration override for low-rank step size
+model:
+  step_size_rank: 256
+
+# Fixed training configuration
+training:
+  batch_size: 2048
+  max_steps: 250_000
+  log_interval: 500
+  eval_interval: 5000
+  optimizer:
+    lr: 3.e-4
+
+# Sweep parameters (grid search)
+hydra:
+  sweeper:
+    params:
+      seed.train: 0,1,2
+
+  # Output directory structure
+  sweep:
+    dir: outputs/sweeps/${now:%Y-%m-%d}/${now:%H-%M-%S}_gemma2_2b_64k_lowrank
+    subdir: ${hydra.job.num}
+
+  # CRITICAL: Don't change working directory (breaks MLflow relative paths)
+  job:
+    name: gemma2_2b_64k_lowrank_sweep
+    chdir: false
+
+  # Callbacks for experiment setup
+  callbacks:
+    mlflow_experiment:
+      _target_: rsae.utils.hydra_callbacks.MLflowExperimentCallback
+
+  # Launcher resource overrides for transformer training (longer, more memory)
+  launcher:
+    timeout_min: 960  # 16 hours (transformers train longer)
+    mem_gb: 256       # More memory for activation buffers
+    cpus_per_task: 16 # More CPUs for data loading

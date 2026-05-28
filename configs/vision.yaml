@@ -1,0 +1,48 @@
+# Vision experiment configuration
+# Training SAEs on DINOv2 patch activations
+
+# MLflow configuration
+mlflow:
+  enabled: true
+  experiment_name: vision-sae-experiments
+  tracking_uri: ./mlruns
+  log_frequency: 100
+  log_artifacts: true
+  checkpoint_interval: 5000
+
+# Output and caching
+output:
+  dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  cache_dir: .cache/models
+  use_cache: false
+
+# Data caching
+data_cache:
+  use_cache: false
+  cache_dir: null
+
+# Device configuration
+device:
+  use_gpu: true
+  gpu_id: 0
+
+# Seeds
+seed:
+  data: 42
+  train: 0
+  split: 42
+
+# Default configurations - compose experiment from these
+defaults:
+  - model: topk_isae
+  - data: vision
+  - training: default
+  - _self_
+
+# Experiment metadata
+experiment:
+  name: vision-identifiability
+  notes: "Training SAEs on DINOv2 patch activations for identifiability assessment"
+  group: null
+  job_type: train
+  tags: vision,dinov2,real_data,identifiability

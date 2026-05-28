@@ -1,0 +1,7 @@
+defaults:
+  - base
+
+name: isae
+use_abstopk: true
+rip_weight: 1.e-1
+l1_weight: 1.e-2

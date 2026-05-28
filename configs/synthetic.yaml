@@ -1,0 +1,42 @@
+# MLflow configuration
+mlflow:
+  enabled: true
+  experiment_name: rsae-experiments
+  tracking_uri: ./mlruns  # Local file-based tracking
+  log_frequency: 100  # Log metrics every N steps
+  log_artifacts: true  # Save model checkpoints to MLflow
+
+# Output and caching
+output:
+  dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}  # Hydra output directory
+  cache_dir: .cache/models
+  use_cache: false  # Whether to use cached models
+
+# Data caching
+data_cache:
+  use_cache: true  # Whether to cache synthetic data generation
+  cache_dir: null  # Cache directory (null = ~/.cache/rsae/synthetic_data)
+
+# Device configuration
+device:
+  use_gpu: true  # Use GPU if available
+  gpu_id: 0  # Which GPU to use (if multiple available)
+
+seed:
+  data: 42
+  train: 42
+
+# Default configurations to compose the experiment
+defaults:
+  - model: topk_sae
+  - data: synthetic
+  - training: default
+  - _self_
+
+# Experiment metadata
+experiment:
+  name: synthetic
+  notes: "Comparing SAE architectures on synthetic data"
+  group: null
+  job_type: train  # train, eval, sweep, etc.
+  tags: synthetic
